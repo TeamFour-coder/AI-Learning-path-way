@@ -19,13 +19,17 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const CoursesPage = lazy(() => import('./pages/CoursesPAge'));
+const CoursesPage = lazy(() => import('./pages/CoursesPage'));
 const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const PreAssessmentPage = lazy(() => import('./pages/PreAssessmentPage'));
+const AssessmentPage = lazy(() => import('./pages/AssessmentPage'));
 const PostAssessmentPage = lazy(() => import('./pages/PostAssessmentPage'));
 const SupportPage = lazy(() => import('./pages/SupportPage'));
 const ShopPage = lazy(() => import('./pages/ShopPage'));
+const StartAssessPage = lazy(() => import('./pages/StartAssessPage.jsx'))
+const AssessmentResultsPage = lazy(() => import('./pages/AssessmentResultsPage.jsx'));
+
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -106,6 +110,24 @@ function App() {
                 </MainLayout>
               } />
               
+              <Route path="/assessment" element={
+                <MainLayout>
+                  <AssessmentPage />
+                </MainLayout>
+              } />
+
+              <Route path="/assessment/:sub" element={
+                <MainLayout>
+                  <StartAssessPage />
+                </MainLayout>
+              } />
+
+              <Route path="/assessment/:sub/results" element={
+                <MainLayout>
+                  <AssessmentResultsPage />
+                </MainLayout>
+              } />
+
               <Route path="/support" element={
                 <MainLayout>
                   <SupportPage />
