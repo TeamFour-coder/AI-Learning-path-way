@@ -450,8 +450,6 @@ const CoursesPage = () => {
           </div>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };

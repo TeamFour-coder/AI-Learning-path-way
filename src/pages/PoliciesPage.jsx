@@ -1,0 +1,1 @@
+import assessmentpolicies from "../components/assessment/assessmentpolicies";

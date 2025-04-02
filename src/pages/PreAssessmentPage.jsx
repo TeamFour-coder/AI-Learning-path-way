@@ -5,7 +5,7 @@ import { FaArrowLeft, FaArrowRight, FaCheck, FaInfoCircle, FaClock } from 'react
 
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
-import QuestionCard from '../components/assessment/QuestionCard';
+import QuestionCard from '../components/assessment/QuestionCard.jsx';
 import AssessmentProgress from '../components/assessment/AssessmentProgress';
 
 const PreAssessmentPage = () => {
