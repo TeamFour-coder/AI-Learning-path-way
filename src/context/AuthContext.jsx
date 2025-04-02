@@ -1,4 +1,6 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
+import { authService } from '../services/api';
 
 // Create auth context
 export const AuthContext = createContext();
@@ -8,15 +10,18 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Check if user is already logged in (from localStorage or sessionStorage)
+  // Check if user is already logged in (from localStorage)
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    
+    if (token && storedUser) {
       try {
         setCurrentUser(JSON.parse(storedUser));
       } catch (error) {
         console.error('Error parsing stored user', error);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
       }
     }
     setLoading(false);
@@ -28,29 +33,17 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      // In a real app, you would make an API call to authenticate
-      // For demo purposes, we're simulating a successful login
-      const mockUserData = {
-        id: '123456',
-        firstName: 'John',
-        lastName: 'Smith',
-        email: email,
-        grade: '11th Grade',
-        school: 'Lincoln High School',
-        avatar: 'https://placehold.co/200x200?text=JS',
-        role: 'student'
-      };
+      const result = await authService.login({ email, password });
+      const { student, token } = result;
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Save user data and token
+      setCurrentUser(student);
+      localStorage.setItem('user', JSON.stringify(student));
+      localStorage.setItem('token', token);
       
-      // Save user data
-      setCurrentUser(mockUserData);
-      localStorage.setItem('user', JSON.stringify(mockUserData));
-      
-      return mockUserData;
+      return student;
     } catch (error) {
-      setError(error.message || 'An error occurred during login');
+      setError(error.response?.data?.error || 'An error occurred during login');
       throw error;
     } finally {
       setLoading(false);
@@ -63,31 +56,17 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      // In a real app, you would make an API call to register a new user
-      // For demo purposes, we're simulating a successful registration
-      const { firstName, lastName, email, password } = userData;
-      
-      const mockUserData = {
-        id: '123456',
-        firstName,
-        lastName,
-        email,
-        grade: userData.grade || '11th Grade',
-        school: userData.school || 'Lincoln High School',
-        avatar: 'https://placehold.co/200x200?text=' + firstName.charAt(0) + lastName.charAt(0),
-        role: 'student'
-      };
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const result = await authService.register(userData);
+      const { student, token } = result;
       
       // Save user data
-      setCurrentUser(mockUserData);
-      localStorage.setItem('user', JSON.stringify(mockUserData));
+      setCurrentUser(student);
+      localStorage.setItem('user', JSON.stringify(student));
+      localStorage.setItem('token', token);
       
-      return mockUserData;
+      return student;
     } catch (error) {
-      setError(error.message || 'An error occurred during signup');
+      setError(error.response?.data?.error || 'An error occurred during signup');
       throw error;
     } finally {
       setLoading(false);
@@ -98,6 +77,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
   
   // Update user profile
@@ -107,14 +87,11 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       
       // In a real app, you would make an API call to update the user profile
-      // For demo purposes, we're simulating a successful update
+      // This would require creating an endpoint in your backend
       const updatedUser = {
         ...currentUser,
         ...updates
       };
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Save updated user data
       setCurrentUser(updatedUser);
@@ -122,49 +99,7 @@ export const AuthProvider = ({ children }) => {
       
       return updatedUser;
     } catch (error) {
-      setError(error.message || 'An error occurred during profile update');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Change password
-  const changePassword = async (currentPassword, newPassword) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // In a real app, you would make an API call to change the password
-      // For demo purposes, we're simulating a successful password change
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      return true;
-    } catch (error) {
-      setError(error.message || 'An error occurred during password change');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Reset password (forgot password flow)
-  const resetPassword = async (email) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // In a real app, you would make an API call to trigger password reset
-      // For demo purposes, we're simulating a successful request
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      return true;
-    } catch (error) {
-      setError(error.message || 'An error occurred during password reset');
+      setError(error.response?.data?.error || 'An error occurred during profile update');
       throw error;
     } finally {
       setLoading(false);
@@ -179,9 +114,7 @@ export const AuthProvider = ({ children }) => {
     login,
     signup,
     logout,
-    updateProfile,
-    changePassword,
-    resetPassword
+    updateProfile
   };
   
   return (

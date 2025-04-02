@@ -8,6 +8,7 @@ import {
 } from 'recharts';
 import { FaBook, FaRegCalendarAlt, FaRegClock, FaChevronRight, FaLaptop, FaFileAlt } from 'react-icons/fa';
 
+
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isLoaded, setIsLoaded] = useState(false);
